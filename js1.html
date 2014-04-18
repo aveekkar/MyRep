@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+	<head>
+		<script>
+			function func1(a,b){
+				this.a=a;
+				this.b=b;
+				this.methFunc1=methFunc1
+			}
+			
+			function methFunc1(){
+				document.getElementById("csl").innerHTML='output:<br>'
+			}
+			
+			function func2(){
+				var retVal = prompt("Enter your name : ", "your name here");
+   				alert("You have entered : " +  retVal );
+				var ob=new func1(3,4);
+				ob.methFunc1();
+				var strbldr="<br>"
+				for(i in ob){
+					strbldr+=i+"<br>";
+				}
+				document.getElementById("cs").innerHTML=strbldr;
+			}
+			
+			function cl(a){
+				if(a.placeholder !=''||a.placeholder!=null){
+					a.placeholder='';
+				}
+				
+			}
+			
+			function clundo(a){
+				if(a.value==null||a.value==''){
+					switch(a.name){
+						case 'Email'   : a.placeholder='mail id';break;
+						case 'Name'    : a.placeholder='Name';break;
+						case 'Message' : a.placeholder='msg';break;
+						default        : a.placeholder='enter text';break;
+					}
+				}
+				else{
+					if(a.name=='Name'){
+						var str='';
+						var i;
+						var arr=a.value.split(" ");
+						for(i in arr){
+							arr[i]=arr[i].substring(0,1).toUpperCase()+arr[i].substring(1);
+							str += arr[i]+' ';
+						}
+						a.value=str.substring(0,str.length-1);
+					}
+				}
+			}
+			
+			function getInfo(){
+				var str='';
+				str +='you are using '+navigator.userAgent+' on '+navigator.platform+'\n';
+				str += 'the following plugins are installed: \n';
+				var i;
+				for(i in navigator.plugins){
+					str+=navigator.plugins[i].name+'\n';
+				}
+				alert(str);
+			}
+			
+		</script>
+	</head>
+	<body onload="getInfo()">
+		<button onclick="func2()">func1</button>
+		<form name='myForm' method="post" action="contactengine.php">
+    <input type="text" class="default-value" name="Name" id="Name" placeholder="Name" onfocus="cl(this)" onblur="clundo(this)"><br>
+
+    <input type="text" class="default-value" name="Email" id="Email" placeholder="mail id" 
+    onfocus="cl(this)" onblur="clundo(this)"><br>
+    
+    <textarea name="Message" class="default-value" name="Message" id="Message" placeholder="msg" onfocus="cl(this)"
+    	onblur="clundo(this)"></textarea><br>
+
+    <input type="submit" name="submit" id="submit" value="Submit" class="submit-button" />
+</form>
+		<p id='csl'></p>
+		<p id='cs'></p>
+	</body>

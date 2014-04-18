@@ -1,0 +1,109 @@
+<!DOCTYPE HTML>
+
+<head>
+	
+	<script>
+		var Mammal=function(){
+			var y='privete value of y';
+			function init(x){
+				this.x=x;
+				this.prev='prievileged';
+				alert('creating Mammal: '+this.x);
+			}
+			
+			
+			init.prototype.getx=function(){
+				alert('Mammal original method');
+			}
+			init.prototype.aaa=function(){
+			    alert('mammal public method');
+			}
+			return init;
+		}();
+		
+		
+		var Animal=function(){
+			function initanimal(a,x){
+				Mammal.call(this,x);
+				this.a=a;
+				alert('creating Animal: '+this.a);
+				
+			}
+			
+			
+			return initanimal;
+		}();
+		
+		Animal.prototype=Object.create(Mammal.prototype);
+		Animal.prototype.constructor=Animal;
+		Animal.superclass=Mammal.prototype;
+		
+		Animal.prototype.geta=function(){
+			return this.a;
+		}
+		Animal.prototype.actest=function(){
+			return this.superclass.prev;
+		}
+		Animal.prototype.getx=function(){
+			alert('Animal override');
+		}
+		
+		var Tiger=function(){
+			function initTiger(a,x,y){
+				Animal.call(this,a,x);
+				this.y=y;
+				alert('creating '+this.y+' Tigers');
+			}
+			
+			return initTiger;
+			
+		}();
+		
+		Tiger.prototype=Object.create(Animal.prototype);
+		Tiger.prototype.constructor=Tiger;
+		Tiger.superclass=Animal.prototype;
+		Tiger.superclass.superclass=Mammal.prototype;
+		
+		Tiger.prototype.gety=function(){
+			return this.y;
+		}
+		Tiger.prototype.getx=function(){
+			alert('Tiger override');
+		}
+		
+		function func(){
+			try{
+				//var expob=new Mammal('Human');
+				//alert('access specifier test..'+expob.testvar);
+				var anob=new Animal('Rik','Human');
+				alert('access specifier test...'+anob.actest());
+				var ob=new Tiger('Lima','Tiger',10);
+				alert(ob instanceof Mammal);
+				alert(ob instanceof Animal);
+				alert('calling tiger method '+ob.gety());
+				var i;
+				var str='';
+				for(i in ob){
+					str += ob[i]+'\n';
+				}
+				alert(str);
+				ob.getx();
+				Tiger.superclass.getx.call(ob);
+				Tiger.superclass.superclass.getx.call(ob);
+				ma=new Mammal('Elephant');
+				ma.aaa();
+				alert(ma.prev);
+				
+			}
+			catch(e){
+				alert(e);
+			}
+			
+		}
+		
+	</script>
+	
+	<body onload="func()">
+		
+	</body>	
+</head>

@@ -1,0 +1,561 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Blackjack!!!</title>
+<script>
+var deck=new Array();
+var dealflag=0;
+var bustflag=false;
+var hitflg=false;
+var card=function(){
+    function init(imgsrc){
+        this.imgsrc=imgsrc;
+        var calcval=0;
+        try{
+            calcval=parseInt(imgsrc.split('_')[0]);
+            if(isNaN(calcval)){
+                if(imgsrc.split('_')[0]=='ace'){
+                    calcval=11;
+                }
+                else{
+                    calcval=10;
+                }
+            }
+        }
+        catch(err){
+            if(imgsrc.split('_')[0]=='ace'){
+                calcval=11;
+            }
+            else{
+                calcval=10;
+            }
+        }
+        
+        this.val=calcval;
+        //alert(imgsrc+' val= '+String(calcval));
+    }
+    
+    init.prototype.getVal=function(){
+        return this.val;
+    } 
+    
+    init.prototype.getImg=function(){
+        return 'cards/'+this.imgsrc;
+    }
+    return init; 
+}();
+
+function makedeck(){
+    var str;
+    for (var i=0;i<4;i++){
+        for(var j=0;j<13;j++){
+            switch(i){
+            case 0: if(j==0){
+                        str='ace_of_spades.png';
+                    }
+                    else if(j==1){
+                        str='king_of_spades2.png';
+                    }
+                    else if(j==11){
+                        str='queen_of_spades2.png';
+                    }
+                    else if(j==12){
+                        str='jack_of_spades2.png';
+                    }
+                    else{
+                        str=j.toString()+'_of_spades.png';
+                    }
+                    break;
+                    
+            case 1: if(j==0){
+                        str='ace_of_hearts.png';
+                    }
+                    else if(j==1){
+                        str='king_of_hearts2.png';
+                    }
+                    else if(j==11){
+                        str='queen_of_hearts2.png';
+                    }
+                    else if(j==12){
+                        str='jack_of_hearts2.png';
+                    }
+                    else{
+                        str=j.toString()+'_of_hearts.png';
+                    }
+                    break;
+                    
+           case 2: if(j==0){
+                        str='ace_of_diamonds.png';
+                    }
+                    else if(j==1){
+                        str='king_of_diamonds2.png';
+                    }
+                    else if(j==11){
+                        str='queen_of_diamonds2.png';
+                    }
+                    else if(j==12){
+                        str='jack_of_diamonds2.png';
+                    }
+                    else{
+                        str=j.toString()+'_of_diamonds.png';
+                    }
+                    break;
+                    
+            case 3: if(j==0){
+                        str='ace_of_clubs.png';
+                    }
+                    else if(j==1){
+                        str='king_of_clubs2.png';
+                    }
+                    else if(j==11){
+                        str='queen_of_clubs2.png';
+                    }
+                    else if(j==12){
+                        str='jack_of_clubs2.png';
+                    }
+                    else{
+                        str=j.toString()+'_of_clubs.png';
+                    } 
+                    break;
+            }
+             deck.push(new card(str));
+             //alert(deck.length);
+        }
+    }
+}
+
+function putImg(imagesrc,elem){
+var x=document.getElementById(elem);
+var ifr=document.createElement('img');
+ifr.setAttribute('src',imagesrc);
+ifr.setAttribute('height','165');
+ifr.setAttribute('width','95');
+x.appendChild(ifr);
+}
+
+
+
+var computer;
+var player;
+var dealer=function(){
+    function init(){
+        this.arr=new Array()
+        //alert('computer created..')
+    }
+    
+    init.prototype.dealCard=function(crd){
+        this.arr.push(crd);
+        //alert(crd.getImg());
+    }
+    
+    init.prototype.start=function(){
+        putImg(this.arr[0].getImg(),'div1');
+        putImg('cards/cover.jpg','div1');
+    }
+    init.prototype.check=function(){
+        return this.arr[0].getVal()+this.arr[1].getVal();
+    }
+    init.prototype.checkHit=function(){
+        if(!hitflg){
+            return null;
+        }
+        var l=this.arr.length;
+        var high=0;
+        var low=0;
+        for(var i=0;i<l;i++){
+           if(this.arr[i].getVal()!=11){
+            low += this.arr[i].getVal();
+            high += this.arr[i].getVal();
+           }
+           else{
+            low += 1;
+            high += 11;
+           }
+        }
+        
+        if(high<16||(high>=16&&low<16)){
+          var deno=deck.length;
+          var numr=0;
+          for(var j=0;j<deno;j++){
+            if(deck[j].getVal()<=5||deck[j].getVal()==11){
+                numr++;
+            }
+          }//alert('high = '+String(high)+' prob= '+String((numr/deno)));
+          if((numr/deno)>=0.3){
+            var len=deck.length;
+            var num=Math.floor((Math.random()*(len-1))+0);
+            var c=deck.splice(num,1)[0];
+            putImg('cards/cover.jpg','div1');
+            this.arr.push(c);
+          }  
+        }
+        else if(high<17||(high>=17&&low<17)){
+                 var deno=deck.length;
+                var numr=0;
+                for(var j=0;j<deno;j++){
+                    if(deck[j].getVal()<=5||deck[j].getVal()==11){
+                    numr++;
+                    }
+                }//alert('high = '+String(high)+' prob= '+String((numr/deno)));
+                if((numr/deno)>=0.35){
+                var len=deck.length;
+                var num=Math.floor((Math.random()*(len-1))+0);
+                var c=deck.splice(num,1)[0];
+                putImg('cards/cover.jpg','div1');
+                this.arr.push(c);
+                }  
+       }
+       else{
+        hitflg=true;
+       }
+        
+    }
+    init.prototype.checkStay=function(){
+        var low=0;
+        var high=0;
+        var l=this.arr.length;
+        for(var i=0;i<l;i++){
+           if(this.arr[i].getVal()!=11){
+            low += this.arr[i].getVal();
+            high += this.arr[i].getVal();
+           }
+           else{
+            low += 1;
+            high += 11;
+           }
+        }
+        if(low==high){
+            return high;
+        }
+        else if(high<=21){
+            return high;
+        }
+        else{
+            return low;
+        }
+    }
+    init.prototype.checkHitOnStay=function(){
+        var flg=true;
+        while(flg){
+            var l=this.arr.length;
+            var high=0;
+            var low=0;
+            for(var i=0;i<l;i++){
+                if(this.arr[i].getVal()!=11){
+                low += this.arr[i].getVal();
+                high += this.arr[i].getVal();
+                }
+                else{
+                    low += 1;
+                    high += 11;
+                }
+            }
+        
+            if(high<16||(high>=16&&low<16)){
+                var deno=deck.length;
+                var numr=0;
+                for(var j=0;j<deno;j++){
+                    if(deck[j].getVal()<=5||deck[j].getVal()==11){
+                    numr++;
+                    }
+                }//alert('high = '+String(high)+' prob= '+String((numr/deno)));
+                if((numr/deno)>=0.3){
+                var len=deck.length;
+                var num=Math.floor((Math.random()*(len-1))+0);
+                var c=deck.splice(num,1)[0];
+                putImg('cards/cover.jpg','div1');
+                this.arr.push(c);
+                }  
+            }
+            else if(high<17||(high>=17&&low<17)){
+                 var deno=deck.length;
+                var numr=0;
+                for(var j=0;j<deno;j++){
+                    if(deck[j].getVal()<=5||deck[j].getVal()==11){
+                    numr++;
+                    }
+                }//alert('high = '+String(high)+' prob= '+String((numr/deno)));
+                if((numr/deno)>=0.35){
+                var len=deck.length;
+                var num=Math.floor((Math.random()*(len-1))+0);
+                var c=deck.splice(num,1)[0];
+                putImg('cards/cover.jpg','div1');
+                this.arr.push(c);
+                }  
+            }
+            else{
+                flg=false;
+            } 
+        }
+    }
+    init.prototype.showAll=function(){
+        var x=document.getElementById('div1');
+        var c=x.firstChild;
+        while(c){
+            x.removeChild(c);
+            c=x.firstChild;
+        }
+        for(var i in this.arr){
+            putImg(this.arr[i].getImg(),'div1');
+        }
+        dealflag=0;
+    }
+    return init;
+}();
+
+var person=function(){
+    function init(){
+        this.arr=new Array()
+        //alert('player created');
+    }
+    
+    init.prototype.dealCard=function(crd){
+        this.arr.push(crd);
+        //alert(crd.getImg());
+    }
+    
+    init.prototype.start=function(){
+        putImg(this.arr[0].getImg(),'div2');
+        putImg(this.arr[1].getImg(),'div2');
+    }
+    init.prototype.check=function(){
+        return this.arr[0].getVal()+this.arr[1].getVal();
+    }
+    init.prototype.checkHit=function(){
+        var len=deck.length;
+        var num=Math.floor((Math.random()*(len-1))+0);
+        var c=deck.splice(num,1)[0];
+        putImg(c.getImg(),'div2');
+        this.arr.push(c);
+        var low=0;
+        var high=0;
+        var l=this.arr.length;
+        //alert(l);
+        for(var i=0;i<l;i++){
+           if(this.arr[i].getVal()!=11){
+            low += this.arr[i].getVal();
+            high += this.arr[i].getVal();
+           }
+           else{
+            low += 1;
+            high += 11;
+           }
+           //alert(i);
+        }
+        if(high>21){
+            if(low>21){
+                //alert(low);
+                bustflag=true;
+                return true;
+            }
+        }
+       return false; 
+    }
+    init.prototype.checkStay=function(){
+        var low=0;
+        var high=0;
+        var l=this.arr.length;
+        for(var i=0;i<l;i++){
+           if(this.arr[i].getVal()!=11){
+            low += this.arr[i].getVal();
+            high += this.arr[i].getVal();
+           }
+           else{
+            low += 1;
+            high += 11;
+           }
+        }
+        if(low==high){
+            return high;
+        }
+        else if(high<=21){
+            return high;
+        }
+        else{
+            return low;
+        }
+    }
+    return init;
+}();
+
+function deal(){
+    if(dealflag!=0){
+        var conf=confirm('you are in the middle\n of a game.\n to continue press cancel.\n to quit press ok.');
+        if(conf){
+            reset();
+        }
+        else{
+            return null;
+        }
+    }
+    else{
+        reset();
+        dealflag=1;
+    }
+    var c;
+    deck.splice(0,deck.length);
+    makedeck();
+    computer=new dealer();
+    player=new person();
+    var len;
+    for(var i=0;i<4;i++){
+        len=deck.length;
+        var num=Math.floor((Math.random()*(len-1))+0);
+        c=deck.splice(num,1)[0];
+        if(i==0||i==2){
+            player.dealCard(c);
+        }
+        else{
+            computer.dealCard(c);
+        }
+    }
+    computer.start();
+    player.start();
+    
+    if(player.check()==21&&computer.check()==21){
+        alert('BLACKJACK!!!!!\n but DRAW!!!! :-(');
+        computer.showAll();
+    }
+    else if(player.check()==21&&computer.check()!=21){
+        alert('Blackjack!!!');
+        stay();
+    }
+    else if(player.check()!=21&&computer.check()==21){
+    }
+}
+
+
+
+function hit(){
+    if(dealflag==0){
+        alert('please deal first!!');
+        return null;
+    }
+    var flag=player.checkHit();
+    var comtot;
+    var pertot;
+    if(flag==true){
+        comtot=computer.checkStay();
+        pertot=player.checkStay();
+        alert('you got Bust!!!');
+        //alert(pertot);
+        if(comtot>21){
+            computer.showAll();
+            alert('computer bust too!!!\n Draw!!!');
+        }
+        else{
+            computer.showAll();
+            alert('computer wins.. :-(');
+        }
+        
+    }
+    else{
+        computer.checkHit();
+    }
+}
+
+function stay(){
+    if(dealflag==0){
+        alert('please deal first!!');
+        return null;
+    }
+    var pertot=player.checkStay();
+    computer.checkHitOnStay();
+    var comtot=computer.checkStay();
+    if(comtot>21){
+        alert('You win!!!!');
+        computer.showAll();
+        return null;
+    }
+    if(pertot>comtot){
+        alert('You win!!!');
+    }
+    else if(pertot==comtot){
+        alert('Draw..');
+    }
+    else{
+        alert('computer won.. :-(');
+    }
+    computer.showAll();
+}
+
+function reset(){
+    bustflag=false;
+    dealflag=0;
+    hitflg=false;
+    var x1=document.getElementById('div1');
+    var x2=document.getElementById('div2');
+    var c1=x1.firstChild;
+    var c2=x2.firstChild;
+    while(c1){
+        x1.removeChild(c1);
+        c1=x1.firstChild;
+    }
+    while(c2){
+        x2.removeChild(c2);
+        c2=x2.firstChild;
+    }
+}
+
+function doubleBet(){
+    alert('Money objects not implemented yet!!! :-(');
+}
+
+function setCookie(c_name,value,exdays){
+    var exdate=new Date();
+    exdate.setDate(exdate.getDate() + exdays);
+    var c_value=escape(value) + ((exdays==null) ? "" : "; expires="+exdate.toUTCString());
+    document.cookie=c_name + "=" + c_value;
+}
+
+function getCookie(c_name){
+    var c_value = document.cookie;
+    var c_start = c_value.indexOf(" " + c_name + "=");
+    if (c_start == -1){
+        c_start = c_value.indexOf(c_name + "=");
+    }
+    if (c_start == -1){
+        c_value = null;
+    }
+    else{
+        c_start = c_value.indexOf("=", c_start) + 1;
+        var c_end = c_value.indexOf(";", c_start);
+        if (c_end == -1){
+            c_end = c_value.length;
+        }
+        c_value = unescape(c_value.substring(c_start,c_end));
+    }
+    return c_value;
+}
+
+function checkCookie(){
+    var username=getCookie("uname");
+    if (username!=null && username!=""){
+       document.getElementById('name').innerHTML=username; 
+    }
+    else {
+        username=prompt("Please enter your name:","");
+        if (username!=null && username!=""){
+            setCookie("uname",username,365);
+            document.getElementById('name').innerHTML=username;
+            
+        }
+    }
+}
+
+</script>
+</head>
+<body style="text-align:center" background='cards/back.jpg' onload="checkCookie()">
+<h2>Computer</h2><br>
+<div id='div1' style="margin:left"></div><br><h2 id='name'>your name</h2>
+<div id='div2' style="margin:left">
+</div>
+<br><button onclick="hit()">hit</button>
+<button onclick="stay()">stay</button>
+<button onclick="doubleBet()">double</button>
+<button onclick="deal()">deal</button>
+<button onclick="reset()">quit</button><br>
+
+</body>
+</html>
