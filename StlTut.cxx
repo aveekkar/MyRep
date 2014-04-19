@@ -62,6 +62,17 @@ int main(void)
 	myMap["blah"];
 	printMap<string, int>(myMap);
 
+	for(int i = 0; i < mapKeys.size(); ++i)
+	{
+		string updateKey = mapKeys.at(i);
+		if(myMap.count(updateKey) == 1)
+		{
+			myMap.at(updateKey) = myMap.at(updateKey)*20 + i;
+		}
+	}
+
+	printMap(myMap);
+
 	///////////////////////now string////////////////////////////////////////////////////////////////////////////////
 
 	///////////////////////now list//////////////////////////////////////////////////////////////////////////////////
